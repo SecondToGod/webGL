@@ -1,2 +1,3 @@
-# webGL
-canvas,three.js,game Engine
+Newton.js是一个web和Html5的图形和动画库，目前(2017.3.20)处在起步阶段。
+该库将由中科院计算机网络信息中心朱京乔和中国传媒大学广电工邱锐共同维护。
+@MIT
