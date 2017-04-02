@@ -1,7 +1,7 @@
-Newton.js是一个web和Html5的图形和动画库.</br>
-contributor:
-	中科院计算机网络信息中心
+Newton.js是一个Web和Html5的图形动画库，目前仍处于开发阶段。</br>
+developer:</br>
+	Chinese Academy Of Sciences:</br>
 	***朱京乔***</br>
-	中国传媒大学
+	Communication University Of China:</br>
 	***邱锐***</br>
-***license MIT***
+***license @MIT***
