@@ -1,5 +1,4 @@
 <script type="text/javascript">
-window.onload=function(){
 	var line = document.getElementById('line');
 	var context = line.getContext('2d');
 	line.width = 800;
@@ -358,6 +357,77 @@ window.onload=function(){
 			searchLight.y = canvas.height - searchLight.radius;
 		}
 	}
-}
-
+	function drawStarSky(){
+		var can,ctx,canW,canH,
+		girl = new Image(),
+		star = new Image(),
+		//定义星星对象
+		starObj = function(){
+			this.x;
+			this.y;
+			this.frame;
+			this.gap;
+		},
+		num = 50,
+		stars = [],
+		gapTime,lastTime;
+		starObj.prototype.init = function(){
+			this.x = Math.random()*(canW-25);
+			this.y = Math.random()*(canH-80);
+			this.frame = Math.floor(Math.random()*7);
+			this.gap = 0;
+		}
+		starObj.prototype.anime = function(){
+			this.gap += gapTime;
+			if(this.gap > 120) {
+				this.frame += 1;
+				this.frame %= 7;
+				this.gap = 0;
+			}
+		}
+		starObj.prototype.drawStar = function(){
+			ctx.drawImage(star,this.frame*7,0,7,7,this.x,this.y,7,7);
+		}
+		function init(){
+			can = document.getElementById('canvas');
+			ctx = can.getContext('2d');
+			canW = can.width;
+			canH = can.height;
+			girl.src = 'src/girl.jpg';
+			star.src = 'src/star.png';
+			for(var i=0;i<num;i++){
+				var obj = new starObj();
+				obj.init();
+				stars.push(obj);
+			}
+			lastTime = Date.now();
+			frameLoop();
+			/*setInterval(function(){
+				frameLoop();
+			},250);*/
+		}
+		function frameLoop(){
+			window.requestAnimationFrame(frameLoop);
+			var now = Date.now();
+			gapTime = now - lastTime;//两帧之间的时间
+			lastTime = now;
+			drawBackgroud();
+			drawStars();
+		}
+		function drawBackgroud(){
+			ctx.fillStyle ='black';
+			ctx.fillRect(0,0,canW,canH);
+		}
+		//处理序列帧图片
+		function drawObj(obj,sx,sy,sWidth,sHeight,x,y,width,height){
+			ctx.drawImage(obj,x,y,width,height);
+		}
+		function drawStars(){
+			for(var i=0;i<num;++i){
+				stars[i].anime();
+				stars[i].drawStar();	
+			}
+		}	
+		init();
+	}
 </script>

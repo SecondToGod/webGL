@@ -1,127 +1,44 @@
+<!DOCTYPE html>
 <html>
 <head>
-    <title>webGL experiment</title>        
+	<title>WebGL</title>
+	<script type="text/javascript" src='./three.js'></script>
 </head>
 <body>
-    <canvas id="mycanvas" style="display: block;margin:0 auto;border:1px #666 dashed" width="800px" height="700px"></canvas>
-</body>
+	<canvas id= 'mycanvas' width='800px' height='600px' style='display:block;margin:0 auto'>your browser don't support WebGL! </canvas>
 <script type="text/javascript">
-   //引入glMatrix库文件
-    function initWebGL(canvas){
-        var gl = null;
-        var msg = '您的浏览器不支持webGL,推荐使用最新版谷歌chrom浏览器';
-        try{
-            gl = canvas.getContext('webgl');
-        }
-        catch(e){
-            msg = 'Error creating WebGl Context!'+ e.toString();
-        }
-        if(!gl){
-            alert(msg);
-            throw new Error(msg);
-        }
-        return gl;
-    }
-    //生成视口
-    function initViewport(gl,canvas){
-        gl.viewport(0,0,canvas.width,canvas.height);
-    }
-    //创建正方形顶点缓冲数据
-    function creatSquare(gl){
-        var vertexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER,vertexBuffer);
-        var verts = [
-            .5, .5, 0.0,
-            -.5, .5, 0.0,
-            .5, -.5, 0.0,
-            -.5, -.5, 0.0
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);
-        var square = {buffer:vertexBuffer,vertSize:3,nVerts:4,primtype:gl.TRIANGLE_STRIP};
-        return square;
-    }
-    //初始化投影矩阵和模型视图矩阵
-    var projectionMatrix,modelViewMatrix;
-    function initMatrices(canvas){
-        modelViewMatrix = mat4.create();
-        mat4.translate(modelViewMatrix,modelViewMatrix,[0,0,-3,333]);
-        projectionMatrix = mat4.create();
-        mat4.perspective(projectionMatrix,Math.PI/4,canvas.width/canvas.height,1,1000);
-    }
-    //着色器
-    function createShader(gl,str,type){
-        var shader;
-        if(type == 'fragment'){
-            shader = gl.createShader(gl.FRAGMENT_SHADER);
-        }else if(type == 'vertex'){
-            shader = gl.createShader(gl.VERTEX_SHADER);
-        }else return null;
-        gl.shaderSource(shader,str);
-        gl.compileShader(shader);
-        if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS)){
-            alert(gl.getShaderInfoLog(shader));
-            return null;
-        }
-        return shader;
-    }
-    //GLSL 源代码
-    var vertexShaderSource = 
-    " attribute vec3 vertexPos;\n" +
-    " uniform mat4 modelViewMatrix;\n" +
-    " uniform mat4 projectionMatrix;\n" +
-    " void main(void){\n" +
-    "       gl_Position = projectionMatrix*modelViewMatrix*\n" +
-    "       vec4(vertexPos,1.0);\n" +
-    " }\n";
-    var fragmentShaderSource = 
-    "  void main(void){\n" +
-    "  gl_FragColor = vec4(1.0,1.0,1.0,1.0);\n" +
-    "  }\n";
-
-    var shaderProgram,shaderVertexPositionAttribute,
-        shaderProjectionMatrixUniform,
-        shaderModelViewMatrixUniform;
-    //初始化着色器
-    function initShader(gl){
-        //加载并编译片段和顶点着色器
-        var fragmentShader = createShader(gl,fragmentShaderSource,'fragment');
-        var vertexShader = createShader(gl,vertexShaderSource,'vertex');
-        //将他们链接到一段新的程序
-        shaderProgram = gl.createProgram();
-        gl.attachShader(shaderProgram,vertexShader);
-        gl.attachShader(shaderProgram,fragmentShader);
-        gl.linkProgram(shaderProgram);
-        //获取指向着色器参数的指针
-        shaderVertexPositionAttribute = gl.getAttribLocation(shaderProgram,'vertexPos');
-        gl.enableVertexAttribArray(shaderVertexPositionAttribute);
-        shaderProjectionMatrixUniform = gl.getUniformLocation(shaderProgram,'projectionMatrix');
-        shaderModelViewMatrixUniform = gl.getUniformLocation(shaderProgram,'modelViewMatrix');
-
-        if(!gl.getProgramParameter(shaderProgram,gl.LINK_STATUS)){
-            alert('Could not initialise shaders');
-        }
-    }
-    function draw(gl,obj){
-        //清空背景
-        gl.clearColor(0.0,0.0,0.0,1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-        //设置待用的顶点缓冲
-        gl.bindBuffer(gl.ARRAY_BUFFER,obj.buffer);
-        //设置待用的着色器
-        gl.useProgram(shaderProgram);
-        //建立着色器参数之间的关联：定点和投影、模型矩阵
-        gl.vertexAttribPointer(shaderVertexPositionAttribute,obj.vertSize,gl.FLOAT,false,0,0);
-        gl.uniformMatrix4fv(shaderProjectionMatrixUniform,false,projectionMatrix);
-        gl.uniformMatrix4fv(shaderModelViewMatrixUniform,false,modelViewMatrix);
-        //绘制物体
-        gl.drawArrays(obj.primtype,0,obj.nVerts);
-    }
-    var mycanvas = document.getElementById('mycanvas');
-    var gl = initWebGL(mycanvas);
-    var square = creatSquare(gl);
-    initViewport(gl,mycanvas);
-    initMatrices(mycanvas);
-    initShader(gl);
-    draw(gl,square);
+	init();
+	function init(){
+		var renderer = new THREE.WebGLRenderer({
+			canvas: document.getElementById('mycanvas')
+		});//渲染器
+		renderer.setSize(800,600);
+		renderer.setClearColor(0x000000);
+		var scene = new THREE.Scene();//场景
+		var camera = new THREE.PerspectiveCamera(45,4/3,1,1000);//透视投影相机
+		//var camera = new THREE.OrthographicCamera(-2,2,1.5,-1.5,1,10);
+		
+		
+		camera.lookAt(new THREE.Vector3(0,0,0));
+		scene.add(camera);
+		/*var cube = new THREE.Mesh(new THREE.CubeGeometry(1,2,2,2,2,3),new THREE.MeshBasicMaterial({color:0xff0000,wireframe:true})
+		);//立方体*/
+		/*var plane = new THREE.Mesh(new THREE.PlaneGeometry(3,2),new THREE.MeshBasicMaterial({color:0xff0000,
+			wireframe:true})
+		);//平面*/
+		/*var ball = new THREE.Mesh(new THREE.SphereGeometry(1,6,6,0,Math.PI/2,Math.PI/6,Math.PI/3),new THREE.MeshBasicMaterial({color:0xff0000,
+			wireframe:true})
+		);//球体*/
+		/*var circle = new THREE.Mesh(new THREE.CircleGeometry(2,18,Math.PI/3,Math.PI/3*4),new THREE.MeshBasicMaterial({color:0xff0000,wireframe:true})
+		);//圆面*/
+		var cylinder = new THREE.Mesh(new THREE.CylinderGeometry(1,2,2.5,18,2,false),new THREE.MeshBasicMaterial({color:0xff0000,wireframe:true})
+		);//圆柱，圆台
+		scene.add(cylinder);
+		setInterval(function(){
+		},200);
+		camera.position.set(0,0,5);
+		renderer.render(scene,camera);//开始渲染
+	}
 </script>
-</html>    
+</body>
+</html>
