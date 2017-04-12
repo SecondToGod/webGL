@@ -17,12 +17,15 @@
 		var scene = new THREE.Scene();//场景
 		var camera = new THREE.PerspectiveCamera(45,4/3,1,1000);//透视投影相机
 		//var camera = new THREE.OrthographicCamera(-2,2,1.5,-1.5,1,10);
+		var light1 = new THREE.AmbientLight(0xffffff);//环境光
+		//var light = new THREE.PointLight(hex,intensity,distance)//点光源
+		//var light = new THREE.DirectionalLight(hex,intensity);light.position.set(to-Vec)//平行光
+		//var light = new THREE.SpotLight(hex,intensity,distance,angle,exponent);light.position.set;light.target.position.set//聚光灯
 		
-		
-		camera.lookAt(new THREE.Vector3(0,0,0));
-		scene.add(camera);
-		/*var cube = new THREE.Mesh(new THREE.CubeGeometry(1,2,2,2,2,3),new THREE.MeshBasicMaterial({color:0xff0000,wireframe:true})
-		);//立方体*/
+		/*camera.lookAt(new THREE.Vector3(0,0,0));
+
+		var cube = new THREE.Mesh(new THREE.CubeGeometry(1,1,1,1,1,1),new THREE.MeshLambertMaterial({color:0x00ff00,wireframe:false})
+		);*///立方体
 		/*var plane = new THREE.Mesh(new THREE.PlaneGeometry(3,2),new THREE.MeshBasicMaterial({color:0xff0000,
 			wireframe:true})
 		);//平面*/
@@ -31,14 +34,91 @@
 		);//球体*/
 		/*var circle = new THREE.Mesh(new THREE.CircleGeometry(2,18,Math.PI/3,Math.PI/3*4),new THREE.MeshBasicMaterial({color:0xff0000,wireframe:true})
 		);//圆面*/
-		var cylinder = new THREE.Mesh(new THREE.CylinderGeometry(1,2,2.5,18,2,false),new THREE.MeshBasicMaterial({color:0xff0000,wireframe:true})
-		);//圆柱，圆台
-		scene.add(cylinder);
+		/*var cylinder = new THREE.Mesh(new THREE.CylinderGeometry(1,2,2,18,2,false),new THREE.MeshLambertMaterial({color:0xff0000,wireframe:false})
+		);//圆柱，圆台*/
+		//贴图
+		/*var texture = new THREE.ImageUtils.loadTexture('../your/img/src',function(){renderer.render(scene,camera)});
+		texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+		texture.repeat.set(4,4);
+		var material = new THREE.MeshLambertMaterial({map:texture});*/
+		//变换
+		/*Mesh.position||rotation||scale.set(x,y,z)*/ 
+		//动画
+		/*requestAnimationFrame||cancelAnimationFrame
+		var requestAnimationFrame = window.requestAnimationFrame 
+        || window.mozRequestAnimationFrame
+        || window.webkitRequestAnimationFrame
+        || window.msRequestAnimationFrame;
+		window.requestAnimationFrame = requestAnimationFrame;*/
+		//stat.js
+/*		var stat = null;
+		function init() {
+		    stat = new Stats();
+		    stat.domElement.style.position = 'absolute';
+		    stat.domElement.style.right = '0px';
+		    stat.domElement.style.top = '0px';
+		    document.body.appendChild(stat.domElement);
+		    renderer = new THREE.WebGLRenderer({
+		        canvas: document.getElementById('mainCanvas')
+		    });
+		    scene = new THREE.Scene();
+		    id = requestAnimationFrame(draw);
+		}
+		function draw() {
+		    stat.begin();
+		    renderer.render(scene, camera);
+		    id = requestAnimationFrame(draw);
+		    stat.end();
+		}
+		function stop() {
+		    if (id !== null) {
+		        cancelAnimationFrame(id);
+		        id = null;
+		    }
+		}*/ 
+		//导入外部材质，模型，需要引入对应加载文件loader.js
+		/*var loader = new THREE.OBJLoader();
+		loader.load('/src/something.obj',function(){
+		obj.traverse(function(child) {
+        if (child instanceof THREE.Mesh) {
+            child.material.side = THREE.DoubleSide;
+        }//双面绘制
+        mesh = obj;//储存到全局变量中
+		scene.add(obj);
+		})*/
+		//同时导入材质和模型
+		/*var loader = new THREE.OBJMTLLoader();
+		loader.addEventListener('load', function(event) {
+		    var obj = event.content;
+		    mesh = obj;
+		    scene.add(obj);
+		});
+		loader.load('../lib/something.obj', '../lib/something.mtl');*/
+		//阴影
+		/*renderer.shadowMapEnabled = true;
+		someOBJ.castShadow = true;//产生阴影
+		someOBJ.receiveShadow = true;//接收阴影
+		shadowDarkness//阴影强度
+		shadowCameraNear、shadowCameraFar、shadowCameraFov//聚光灯
+		shadowCameraNear、shadowCameraFar、shadowCameraLeft、shadowCameraRight、shadowCameraTop以及shadowCameraBottom//平行光
+		*/
+		//着色器
+		/*$.get('shader/my.vs', function(vShader){
+		    $.get('shader/my.fs', function(fShader){
+		        material = new THREE.ShaderMaterial({
+		            vertexShader: vShader,
+		            fragementShader: fShader
+		        });
+		    });
+		}); */
+		var light2 = new THREE.SpotLight(0xffff00, 1, 100, Math.PI / 6, 25);
+		light2.target = cube;
+		scene.add(camera,light1,light2,cube);
 		setInterval(function(){
 		},200);
 		camera.position.set(0,0,5);
-		renderer.render(scene,camera);//开始渲染
-	}
+		renderer.render(scene,camera);
+}//开始渲染
 </script>
 </body>
 </html>
